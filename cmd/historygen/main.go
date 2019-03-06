@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/improbable-eng/thanos/benchmark/pkg/tsdb"
+	"github.com/jjneely/stuff/tsdb"
 )
 
 var (
