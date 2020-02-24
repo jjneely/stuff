@@ -11,7 +11,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
+
+// Set a session cookie that is just the current time
+func setCookie(w http.ResponseWriter) {
+	cookie := http.Cookie{
+		Name:    "HSESSIONID",
+		Value:   time.Now().String(),
+		Expires: time.Now().AddDate(0, 0, 1),
+	}
+	http.SetCookie(w, &cookie)
+}
 
 func main() {
 	running := true
@@ -23,7 +34,13 @@ func main() {
 
 	// Define some basic content that can identify itself via --name
 	helloHandler := func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Hello, %s!\n", *world)
+		if _, err := req.Cookie("HSESSIONID"); err == http.ErrNoCookie {
+			setCookie(w)
+		} else if err != nil {
+			http.Error(w, "Bad HSESSIONID cookie", http.StatusBadRequest)
+		} else {
+			fmt.Fprintf(w, "Hello, %s!\n", *world)
+		}
 	}
 
 	// Report if this process in "healthy" which it should be unless
