@@ -38,9 +38,9 @@ func main() {
 			setCookie(w)
 		} else if err != nil {
 			http.Error(w, "Bad HSESSIONID cookie", http.StatusBadRequest)
-		} else {
-			fmt.Fprintf(w, "Hello, %s!\n", *world)
+			return
 		}
+		fmt.Fprintf(w, "Hello, %s!\n", *world)
 	}
 
 	// Report if this process in "healthy" which it should be unless
