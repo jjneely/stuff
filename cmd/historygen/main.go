@@ -11,6 +11,8 @@ import (
 var (
 	duration = flag.Duration("d", time.Hour*720,
 		"Time duration of historical data to generate")
+	timeShift = flag.Duration("s", time.Hour*0,
+		"Time shift of historical data to generate")
 	outDir = flag.String("o", "data/",
 		"Output directory to generate TSDB blocks in")
 	timeSeries = flag.Int("c", 1,
@@ -25,7 +27,7 @@ func main() {
 	log.Printf("Generate Prometheus TSDB test data.")
 	flag.Parse()
 
-	endTime := time.Now()
+	endTime := time.Now().Add(-*timeShift)
 	err := tsdb.CreateThanosTSDB(tsdb.Opts{
 		OutputDir:      *outDir,
 		NumTimeseries:  *timeSeries,

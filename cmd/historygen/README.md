@@ -13,6 +13,8 @@ time series foot print, say a year's worth of data, then this tool is for you.
             Number of time series to generate (default 1)
       -d duration
             Time duration of historical data to generate (default 720h0m0s)
+      -s duration
+            Time shift of historical data to generate (default 0h)
       -i duration
             Duration between samples (default 15s)
       -o string
@@ -21,7 +23,7 @@ time series foot print, say a year's worth of data, then this tool is for you.
 Historygen will create the directory named by the `-o` option and populate
 it with TSDB blocks containing time series data.  Each block produced will
 have the duration specified by `-b` (block length).  The total amount of
-history to generate is controlled by `-d` for duration.  So, for 720 hours
+history to generate is controlled by `-d` and `-s` for duration.  So, for 720 hours
 of history (about a month) the tool would generate 360 TSDB blocks spanning
 the time range from the time the command was run until 720 hours ago.
 
