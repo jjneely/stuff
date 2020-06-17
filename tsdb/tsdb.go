@@ -62,12 +62,14 @@ const (
 )
 
 type Opts struct {
-	OutputDir      string        // The directory to place the generated TSDB blocks. Default /tmp/tsdb.
-	NumTimeseries  int           // The number of timeseries to generate. Default 1.
-	StartTime      time.Time     // Metrics will be produced from this time. Default now.
-	EndTime        time.Time     // Metrics will be produced until this time. Default 1 week.
-	SampleInterval time.Duration // How often to sample the metrics. Default 15s.
-	BlockLength    time.Duration // The length of time each block will cover. Default 2 hours.
+	OutputDir            string        // The directory to place the generated TSDB blocks. Default /tmp/tsdb.
+	NumTimeseries        int           // The number of timeseries to generate. Default 1.
+	TotalNumTimeSeries   int           // The total number of timeseries to generate using multiple invocations. Default NumTimeseries.
+	TimeseriesStartIndex int           // The start index of timeseries instance names. Default 0
+	StartTime            time.Time     // Metrics will be produced from this time. Default now.
+	EndTime              time.Time     // Metrics will be produced until this time. Default 1 week.
+	SampleInterval       time.Duration // How often to sample the metrics. Default 15s.
+	BlockLength          time.Duration // The length of time each block will cover. Default 2 hours.
 }
 
 type timeseries struct {
@@ -83,6 +85,10 @@ func CreateThanosTSDB(opts Opts) error {
 
 	if opts.NumTimeseries == 0 {
 		opts.NumTimeseries = 1
+	}
+
+	if opts.TotalNumTimeSeries == 0 {
+		opts.TotalNumTimeSeries = opts.NumTimeseries
 	}
 
 	now := time.Now()
@@ -134,7 +140,7 @@ func createBlock(opts Opts, rng *rand.Rand, blockStart time.Time, blockEnd time.
 	}
 
 	// Store references to these chunks in the index.
-	if err := createIndex(series, outputDir); err != nil {
+	if err := createIndex(series, outputDir, opts.TimeseriesStartIndex, opts.TotalNumTimeSeries); err != nil {
 		return errors.Wrap(err, "failed to create index")
 	}
 
@@ -234,10 +240,10 @@ func populateChunks(series []*timeseries, outputDir string, blockStart time.Time
 }
 
 // createIndex will write the index file. It should reference the chunks previously created.
-func createIndex(series []*timeseries, outputDir string) error {
+func createIndex(series []*timeseries, outputDir string, seriesStartIndex int, totalSeries int) error {
 	// Note that 0-padding ensures sorted ordering
 	nameTmpl := fmt.Sprintf("test-metric-%%0%dd",
-		int(math.Ceil(math.Log10(float64(len(series))))))
+		int(math.Ceil(math.Log10(float64(totalSeries)))))
 	values := make([]string, len(series))
 	labelset := make([]labels.Labels, len(series))
 	iw, err := index.NewWriter(filepath.Join(outputDir, "index"))
@@ -247,7 +253,7 @@ func createIndex(series []*timeseries, outputDir string) error {
 
 	// Populate label values for instance
 	for i := range series {
-		values[i] = fmt.Sprintf(nameTmpl, i)
+		values[i] = fmt.Sprintf(nameTmpl, i+seriesStartIndex)
 	}
 
 	// Add the symbol table from all symbols we use.
