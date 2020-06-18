@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/qcrisw/stuff/tsdb"
+	"github.com/jjneely/stuff/tsdb"
 )
 
 var (
