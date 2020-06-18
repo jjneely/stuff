@@ -11,8 +11,14 @@ time series foot print, say a year's worth of data, then this tool is for you.
             TSDB block length (default 2h0m0s)
       -c int
             Number of time series to generate (default 1)
+      -C int
+            Total number of time series to generate using multiple invocations (only needed for the zero padding of instance names)
+      -n int
+            Start index for time series instance names (default 0)
       -d duration
             Time duration of historical data to generate (default 720h0m0s)
+      -s duration
+            Time shift of historical data to generate (default 0h)
       -i duration
             Duration between samples (default 15s)
       -o string
@@ -21,12 +27,13 @@ time series foot print, say a year's worth of data, then this tool is for you.
 Historygen will create the directory named by the `-o` option and populate
 it with TSDB blocks containing time series data.  Each block produced will
 have the duration specified by `-b` (block length).  The total amount of
-history to generate is controlled by `-d` for duration.  So, for 720 hours
+history to generate is controlled by `-d` and `-s` for duration.  So, for 720 hours
 of history (about a month) the tool would generate 360 TSDB blocks spanning
 the time range from the time the command was run until 720 hours ago.
 
 All time series generated have the name `test`, a `job="testdata"` label,
-and an `instance="test-metric-XXX"` where XXX is a zero based integer that
+and an `instance="test-metric-XXX"` where XXX is a zero based integer
+(unless otherwise specified by the `-n` option) that
 uniquely defines each time series as requested by the `-c` option.  Using
 `-c 500` would produce time series that look like:
 
