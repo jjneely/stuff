@@ -218,7 +218,7 @@ func populateChunks(series []*timeseries, outputDir string, blockStart time.Time
 			cm := chunks.Meta{
 				Chunk:   ch,
 				MinTime: chunkStartMs,
-				MaxTime: chunkStartMs + sampleInterval.Nanoseconds()/(1000*1000),
+				MaxTime: chunkStartMs + chunkLength.Nanoseconds()/(1000*1000),
 				Ref:     ref | (seg << 32),
 			}
 
