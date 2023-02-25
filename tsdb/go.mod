@@ -10,5 +10,5 @@ require (
 
 require (
 	github.com/cespare/xxhash v1.1.0 // indirect
-	golang.org/x/sys v0.0.0-20181116152217-5ac8a444bdc5 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
